@@ -1,0 +1,66 @@
+# =========================
+# Python virtual environment
+# =========================
+venv/
+
+# =========================
+# Python cache files
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# Environment variables / secrets
+# =========================
+.env
+myPAT.txt
+
+# =========================
+# Temporary / output data
+# =========================
+cleaned_markdown/
+md_cleaned/
+md_structured/
+chunked_dataset.json
+data_fixed.json
+mdfiles/
+rag_test_cases.md
+rag_evaluation_results.csv
+json_cleaned/
+# Data files
+dataset.json
+qa_data/
+rag_eval_dataset.json
+
+
+# =========================
+# Large datasets (optional)
+# =========================
+*.json
+*.csv
+
+# =========================
+# Jupyter / Notebook temp files
+# =========================
+notebook/.ipynb_checkpoints/
+notebook/*.log
+
+# =========================
+# VSCode / editor settings
+# =========================
+.vscode/
+
+# =========================
+# Milvus, MinIO, ETCD volumes
+# =========================
+volumes/milvus/
+volumes/etcd/
+volumes/minio/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db

@@ -1,0 +1,77 @@
+version: '3.5'
+
+services:
+  etcd:
+    container_name: milvus-etcd
+    image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_HEARTBEAT_INTERVAL: "500"
+      ETCD_ELECTION_TIMEOUT: "5000"
+    command: >
+      etcd
+      --data-dir=/etcd-data
+      --listen-client-urls=http://0.0.0.0:2379
+      --advertise-client-urls=http://milvus-etcd:2379
+    ports:
+      - "2379:2379"
+    networks:
+      - milvus-network
+
+  minio:
+    container_name: milvus-minio
+    image: minio/minio:RELEASE.2023-12-23T07-19-11Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - milvus-network
+
+  milvus:
+    container_name: milvus
+    image: milvusdb/milvus:v2.4.0
+    depends_on:
+      - etcd
+      - minio
+    environment:
+      ETCD_ENDPOINTS: milvus-etcd:2379
+      MINIO_ADDRESS: milvus-minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      MILVUS_ENABLE_EMBEDDED_ETCD: "false"
+      MILVUS_ENABLE_EMBEDDED_MINIO: "false"
+      MILVUS_LOG_LEVEL: debug
+      COMMON_DATA_PATH: /var/lib/milvus
+    volumes:
+      - milvus_data:/var/lib/milvus
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    command: ["milvus", "run", "standalone"]
+    networks:
+      - milvus-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+networks:
+  milvus-network:
+    driver: bridge
+
+volumes:
+  milvus_data:
+  minio_data:
+
