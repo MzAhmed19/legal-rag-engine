@@ -11,6 +11,9 @@ class Settings:
     def __init__(self):
         # Load environment variables
         load_dotenv()
+        self.gemini_api_key: str = os.getenv("GEMINI_API_KEY")
+        if not self.gemini_api_key:
+            raise ValueError("FATAL: GEMINI_API_KEY not found in environment variables.")
 
         # 🔑 API Keys
         self.groq_api_key: str = os.getenv("GROQ_API_KEY")
@@ -27,7 +30,7 @@ class Settings:
         # 📏 Embedding Model
         # Upgrade to BGE Large v1.5 for much stronger retrieval
         self.embedding_model_name: str = "BAAI/bge-large-en-v1.5"
-        self.embedding_dim: int = 768  # BGE large uses 1024 dimensions
+        self.embedding_dim: int = 1024  # BGE large uses 1024 dimensions
 
         # 📚 Chunking Strategy
         # Keep small enough for context precision but overlap for continuity

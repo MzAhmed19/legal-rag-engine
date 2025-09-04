@@ -61,12 +61,12 @@ def create_query_engine():
     groq_llm = Groq(model=settings.llm_model_name, api_key=settings.groq_api_key)
 
     # Cohere reranker
-    reranker = CohereRerank(api_key=settings.cohere_api_key, top_n=5)
+    reranker = CohereRerank(api_key=settings.cohere_api_key, top_n=3)
 
     # Query engine with retrieval + reranking
     return index.as_query_engine(
         llm=groq_llm,
-        similarity_top_k=12,  # Retrieve top 10 candidates
+        similarity_top_k=10,  # Retrieve top 10 candidates
         node_postprocessors=[reranker],  # Re-rank & return top 3
     )
 
